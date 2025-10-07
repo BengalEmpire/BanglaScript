@@ -1,7 +1,7 @@
 {
-  "name": "banglascript-ast",
+  "name": "banglascript",
   "version": "1.0.0",
-  "description": "BanglaScript v1.0 (AST prototype) - .bjs -> .js with source maps and global CLI",
+  "description": "BanglaScript (BJS) একটি ট্রান্সপাইলার যা বাংলা ভাষায় লেখা কোডকে JavaScript-এ রূপান্তর করে। Transpiles .bjs files to .js with source maps.",
   "main": "lib/transpile-ast.js",
   "bin": {
     "bjs": "./bin/bjs"
@@ -23,5 +23,9 @@
   },
   "engines": {
     "node": ">=16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/banglascript-ast.git"
   }
 }
