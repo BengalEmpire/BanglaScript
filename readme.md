@@ -233,6 +233,7 @@ node banglascript.js main.bjs --run
 * Node.js ও Browser runtime support
 * Input system (`পড়ো()` ফাংশন)
 * বাংলা লাইব্রেরি সমর্থন
+* Linguist configuration for highlighting .bjs extension
 * এটিকে সহজতর করা হবে। যার মাধ্যমে সময়ে Code Editor (VSCode), এ BanglaScript কোড লিখা যাবে। 
 
 ---
