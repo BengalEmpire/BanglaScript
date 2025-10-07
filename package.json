@@ -1,0 +1,20 @@
+{
+  "name": "banglascript",
+  "version": "1.0.0",
+  "description": "বাংলাস্ক্রিপ্ট একটি পরীক্ষামূলক (experimental) প্রোগ্রামিং ভাষা, যা বাংলা ভাষায় কোড লেখার সুযোগ দেয়। এটি মূলত শিক্ষামূলক উদ্দেশ্যে তৈরি, যাতে বাংলা ভাষাভাষী শিক্ষার্থীরা প্রোগ্রামিংয়ের মৌলিক ধারণাগুলো সহজে বুঝতে পারে।",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BengalEmpire/BanglaScript.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BengalEmpire/BanglaScript/issues"
+  },
+  "homepage": "https://github.com/BengalEmpire/BanglaScript#readme"
+}
