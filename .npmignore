@@ -1,0 +1,33 @@
+# Ignore node_modules and build files
+node_modules/
+build/
+dist/
+coverage/
+tmp/
+.cache/
+
+# Ignore examples, tests, and docs
+examples/
+test/
+tests/
+docs/
+README-dev.md
+
+# Ignore git and config files
+.git/
+.gitignore
+.npmignore
+.gitattributes
+package-lock.json
+
+# Ignore editor and system files
+*.log
+*.tmp
+*.swp
+*.DS_Store
+.env
+.vscode/
+.idea/
+
+# Optional: if you have source files but only lib/ is compiled
+src/
