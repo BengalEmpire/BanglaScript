@@ -1,31 +1,37 @@
 {
   "name": "banglascript",
-  "version": "1.0.0",
-  "description": "BanglaScript (BJS) একটি ট্রান্সপাইলার যা বাংলা ভাষায় লেখা কোডকে JavaScript-এ রূপান্তর করে। Transpiles .bjs files to .js with source maps.",
+  "version": "1.7.5",
+  "description": "বাংলা ভাষায় JavaScript প্রোগ্রামিং - BanglaScript Transpiler",
   "main": "lib/transpile-ast.js",
   "bin": {
-    "bjs": "./bin/bjs"
+    "bjs": "bin/bjs.js"
   },
   "scripts": {
-    "start": "node bin/bjs",
-    "test": "node bin/bjs examples/main.bjs --out build --run"
+    "test": "node test/test.js"
   },
-  "keywords": ["bangla","transpiler","bjs","banglascript","ast","sourcemap"],
-  "author": "Your Name <you@example.com>",
+  "keywords": [
+    "bangla",
+    "bengali",
+    "banglascript",
+    "transpiler",
+    "bengali-programming",
+    "বাংলা"
+  ],
+  "author": "Mahmud Rahman",
   "license": "MIT",
   "dependencies": {
-    "@babel/core": "^7.24.0",
-    "@babel/parser": "^7.24.0",
-    "@babel/generator": "^7.24.0",
-    "chokidar": "^3.5.3",
+    "@babel/core": "^7.23.0",
+    "@babel/parser": "^7.23.0",
+    "@babel/generator": "^7.23.0",
     "commander": "^11.0.0",
-    "source-map": "^0.7.4"
+    "chokidar": "^3.5.3"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=14.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/banglascript-ast.git"
-  }
+    "url": "https://github.com/BengalEmpire/BanglaScript.git"
+  },
+  "homepage": "https://bangla-script.vercel.app"
 }

@@ -10,6 +10,7 @@ tmp/
 examples/
 test/
 tests/
+json
 docs/
 README-dev.md
 
@@ -19,6 +20,7 @@ README-dev.md
 .npmignore
 .gitattributes
 package-lock.json
+VSCODE-EXTENSION/
 
 # Ignore editor and system files
 *.log
@@ -28,6 +30,7 @@ package-lock.json
 .env
 .vscode/
 .idea/
+
 
 # Optional: if you have source files but only lib/ is compiled
 src/
