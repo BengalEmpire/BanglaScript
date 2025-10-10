@@ -1,6 +1,6 @@
 {
   "name": "banglascript",
-  "version": "1.7.5",
+  "version": "1.8.0",
   "description": "বাংলা ভাষায় JavaScript প্রোগ্রামিং - BanglaScript Transpiler",
   "main": "lib/transpile-ast.js",
   "bin": {
@@ -19,10 +19,12 @@
   ],
   "author": "Mahmud Rahman",
   "license": "MIT",
-  "dependencies": {
+"dependencies": {
     "@babel/core": "^7.23.0",
-    "@babel/parser": "^7.23.0",
     "@babel/generator": "^7.23.0",
+    "@babel/parser": "^7.23.0",
+    "@babel/preset-env": "^7.23.2",
+    "babel-preset-minify": "^0.5.2",
     "commander": "^11.0.0",
     "chokidar": "^3.5.3"
   },

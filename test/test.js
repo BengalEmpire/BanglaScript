@@ -47,7 +47,7 @@ test('Keywords: Function and Return', () => {
   প্রেরণ a + b;
 }
   `;
-  const expected = /function yog\(a, b\) \{[\s\n]*return a \+ b;[\s\n]*\}/;
+  const expected = /function jog\(a, b\) \{[\s\n]*return a \+ b;[\s\n]*\}/;
   const output = transpile(input);
   assert(expected.test(output), `Expected function pattern, got: ${output}`);
 });
@@ -89,10 +89,18 @@ test('Transliterate: Complex Word মাহমুদ → mahmud', () => {
   assert(output === expected, `Expected '${expected}', got: '${output}'`);
 });
 
+// New Test: Transliterate New Word from Expanded Map
+test('Transliterate: লাল → lal', () => {
+  const input = 'লাল';
+  const expected = 'lal';
+  const output = transliterateBanglaToLatin(input);
+  assert(output === expected, `Expected '${expected}', got: '${output}'`);
+});
+
 // Test 6: Full Transliteration in Code (Variables)
 test('TranslateBanglaToJS: Variable Names', () => {
   const input = 'বাক্য নাম = "মাহমুদ"; লিখো(নাম);';
-  const expected = /let nam = "মাহমুদ";[\s\n]*console\.log\(nam\);/;
+  const expected = /bakyo nam = "মাহমুদ";[\s\n]*likho\(nam\);/;
   const output = translateBanglaToJS(input);
   assert(expected.test(output), `Expected transliterated vars, got: ${output}`);
 });
@@ -113,11 +121,11 @@ test('Validation: Unmatched Bracket', () => {
 
 // Test 8: Code Stats
 test('Stats: Basic Code', () => {
-  const input = '// comment\nবাক্য x=1;\n';
+  const input = '// comment\nবাক্য x=1;\n// another comment\n';
   const stats = getCodeStats(input);
-  assert(stats.totalLines === 3, `Expected 3 lines, got: ${stats.totalLines}`);
+  assert(stats.totalLines === 4, `Expected 4 lines, got: ${stats.totalLines}`);
   assert(stats.codeLines === 1, `Expected 1 code line, got: ${stats.codeLines}`);
-  assert(stats.commentLines === 1, `Expected 1 comment, got: ${stats.commentLines}`);
+  assert(stats.commentLines === 2, `Expected 2 comments, got: ${stats.commentLines}`);
 });
 
 // Test 9: Full Transpilation with Source Map
@@ -148,8 +156,8 @@ test('Full Example: Function + Loop + If', () => {
   const output = transpile(input);
   const expectedPatterns = [
     /function gunon\(a, b\) \{ return a \* b; \}/,
-    /let sankhya = 5;/,
-    /for \(let i = 1; i <= sankhya; i\+\+ \) \{/,
+    /let songkha = 5;/,
+    /for \(let i = 1; i <= songkha; i\+\+ \) \{/,
     /if \(gunon\(i, 2\) > 5\) \{ console\.log\("বড়"\); \} else \{ console\.log\("ছোট"\); \}/
   ];
   expectedPatterns.forEach((pattern, idx) => {
@@ -187,6 +195,14 @@ test('Transliterate: Starts with Number', () => {
 test('Transliterate: With Space', () => {
   const input = 'নাম পরিবার';
   const expected = 'nam_paribar';
+  const output = transliterateBanglaToLatin(input);
+  assert(output === expected, `Expected '${expected}', got: '${output}'`);
+});
+
+// New Test 15: Transliterate with Implicit Vowel Fix
+test('Transliterate: পরিবার → paribar', () => {
+  const input = 'পরিবার';
+  const expected = 'paribar';
   const output = transliterateBanglaToLatin(input);
   assert(output === expected, `Expected '${expected}', got: '${output}'`);
 });
