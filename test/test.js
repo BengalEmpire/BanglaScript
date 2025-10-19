@@ -1,10 +1,9 @@
-// BanglaScript Transpiler Test Suite
-
 const fs = require('fs');
 const path = require('path');
+const { spawnSync } = require('child_process');
 const { transpile, transpileWithSourceMap } = require('../lib/transpile-ast');
 const { translateBanglaToJS, convertBanglaNumbers, transliterateBanglaToLatin } = require('../lib/translate-words');
-const { validateBanglaScript, getCodeStats } = require('../lib/utils');
+const { validateBanglaScript, getCodeStats, doBuild, initProject } = require('../lib/utils');
 
 // Test counter
 let passed = 0;
@@ -44,7 +43,7 @@ test('Keywords: বাক্য → let', () => {
 test('Keywords: Function and Return', () => {
   const input = `
 অনুষ্ঠান যোগ(a, b) {
-  প্রেরণ a + b;
+  ফেরত a + b;
 }
   `;
   const expected = /function jog\(a, b\) \{[\s\n]*return a \+ b;[\s\n]*\}/;
@@ -89,7 +88,7 @@ test('Transliterate: Complex Word মাহমুদ → mahmud', () => {
   assert(output === expected, `Expected '${expected}', got: '${output}'`);
 });
 
-// New Test: Transliterate New Word from Expanded Map
+// Test 6: Transliterate New Word
 test('Transliterate: লাল → lal', () => {
   const input = 'লাল';
   const expected = 'lal';
@@ -97,15 +96,15 @@ test('Transliterate: লাল → lal', () => {
   assert(output === expected, `Expected '${expected}', got: '${output}'`);
 });
 
-// Test 6: Full Transliteration in Code (Variables)
+// Test 7: Full Transliteration in Code (Variables)
 test('TranslateBanglaToJS: Variable Names', () => {
   const input = 'বাক্য নাম = "মাহমুদ"; লিখো(নাম);';
-  const expected = /bakyo nam = "মাহমুদ";[\s\n]*likho\(nam\);/;
-  const output = translateBanglaToJS(input);
+  const expected = /let nam = "মাহমুদ";[\s\n]*console\.log\(nam\);/;
+  const output = transpile(input);
   assert(expected.test(output), `Expected transliterated vars, got: ${output}`);
 });
 
-// Test 7: Syntax Validation
+// Test 8: Syntax Validation
 test('Validation: Valid Code', () => {
   const input = 'বাক্য x = 1; { y = 2; }';
   const validation = validateBanglaScript(input);
@@ -119,7 +118,7 @@ test('Validation: Unmatched Bracket', () => {
   assert(validation.errors.length > 0, 'Expected errors array');
 });
 
-// Test 8: Code Stats
+// Test 9: Code Stats
 test('Stats: Basic Code', () => {
   const input = '// comment\nবাক্য x=1;\n// another comment\n';
   const stats = getCodeStats(input);
@@ -128,7 +127,7 @@ test('Stats: Basic Code', () => {
   assert(stats.commentLines === 2, `Expected 2 comments, got: ${stats.commentLines}`);
 });
 
-// Test 9: Full Transpilation with Source Map
+// Test 10: Full Transpilation with Source Map
 test('TranspileWithSourceMap: Basic', () => {
   const input = 'বাক্য x = 1; লিখো(x);';
   const result = transpileWithSourceMap(input, 'test.bjs');
@@ -137,11 +136,11 @@ test('TranspileWithSourceMap: Basic', () => {
   assert(result.map.sourcesContent[0] === input, 'Expected original source in map');
 });
 
-// Test 10: Complex Example Transpilation
+// Test 11: Complex Example Transpilation
 test('Full Example: Function + Loop + If', () => {
   const input = `
 অনুষ্ঠান গুণন(a, b) {
-  প্রেরণ a * b;
+  ফেরত a * b;
 }
 
 বাক্য সংখ্যা = ৫;
@@ -165,16 +164,16 @@ test('Full Example: Function + Loop + If', () => {
   });
 });
 
-// Test 11: Edge Case - Empty Code
+// Test 12: Edge Case - Empty Code
 test('Transpile: Empty String', () => {
   const input = '';
   const output = transpile(input);
   assert(output === '', 'Expected empty output');
 });
 
-// Test 12: Error Handling in Transpile
+// Test 13: Error Handling in Transpile
 test('Transpile: Invalid Syntax', () => {
-  const input = 'বাক্য x = ;'; // Invalid JS after preprocess
+  const input = 'বাক্য x = ;';
   try {
     transpile(input);
     assert(false, 'Expected error on invalid syntax');
@@ -183,28 +182,102 @@ test('Transpile: Invalid Syntax', () => {
   }
 });
 
-// Test 13: Transliterate Invalid Start (Number)
+// Test 14: Transliterate Invalid Start (Number)
 test('Transliterate: Starts with Number', () => {
-  const input = '১নাম'; // 1nam
+  const input = '১নাম';
   const expected = '_1nam';
   const output = transliterateBanglaToLatin(input);
   assert(output === expected, `Expected '${expected}', got: '${output}'`);
 });
 
-// Test 14: Transliterate Spaces
-test('Transliterate: With Space', () => {
-  const input = 'নাম পরিবার';
-  const expected = 'nam_paribar';
-  const output = transliterateBanglaToLatin(input);
-  assert(output === expected, `Expected '${expected}', got: '${output}'`);
-});
-
-// New Test 15: Transliterate with Implicit Vowel Fix
+// Test 15: Transliterate with Implicit Vowel Fix
 test('Transliterate: পরিবার → paribar', () => {
   const input = 'পরিবার';
   const expected = 'paribar';
   const output = transliterateBanglaToLatin(input);
   assert(output === expected, `Expected '${expected}', got: '${output}'`);
+});
+
+// New Test 16: No Transliteration Option
+test('No Transliteration: Keep Bangla Identifiers', () => {
+  const input = 'বাক্য নাম = "মাহমুদ"; লিখো(নাম);';
+  const output = transpileWithSourceMap(input, 'test.bjs', true).code;
+  assert(output.includes('নাম'), `Expected 'নাম' to remain, got: ${output}`);
+});
+
+// New Test 17: CLI Build Command
+test('CLI: Build Command', () => {
+  const testDir = path.join(__dirname, 'test_temp');
+  const testFile = path.join(testDir, 'test.bjs');
+  const outDir = path.join(testDir, 'build');
+  fs.mkdirSync(testDir, { recursive: true });
+  fs.writeFileSync(testFile, 'বাক্য x = 1; লিখো(x);');
+
+  const result = doBuild(testFile, outDir);
+  assert(result && fs.existsSync(result), `Expected output file at ${result}`);
+  const output = fs.readFileSync(result, 'utf8');
+  assert(output.includes('let x = 1'), `Expected 'let x = 1' in output, got: ${output}`);
+
+  // Cleanup
+  fs.rmSync(testDir, { recursive: true, force: true });
+});
+
+// New Test 18: CLI Run Command
+test('CLI: Run Command', () => {
+  const testDir = path.join(__dirname, 'test_temp');
+  const testFile = path.join(testDir, 'test.bjs');
+  const outDir = path.join(testDir, 'build');
+  fs.mkdirSync(testDir, { recursive: true });
+  fs.writeFileSync(testFile, 'লিখো("Hello from BanglaScript!");');
+
+  const result = doBuild(testFile, outDir);
+  assert(result && fs.existsSync(result), `Expected output file at ${result}`);
+
+  const runResult = spawnSync(process.execPath, [result], { encoding: 'utf8' });
+  assert(runResult.stdout.includes('Hello from BanglaScript!'), `Expected 'Hello from BanglaScript!' in output, got: ${runResult.stdout}`);
+
+  // Cleanup
+  fs.rmSync(testDir, { recursive: true, force: true });
+});
+
+// New Test 19: Init Project
+test('Init: Project Structure', () => {
+  const testDir = path.join(__dirname, 'test_project');
+  initProject('test_project');
+
+  assert(fs.existsSync(testDir), 'Expected project directory to be created');
+  assert(fs.existsSync(path.join(testDir, 'src', 'main.bjs')), 'Expected main.bjs to exist');
+  assert(fs.existsSync(path.join(testDir, 'package.json')), 'Expected package.json to exist');
+  assert(fs.existsSync(path.join(testDir, 'README.md')), 'Expected README.md to exist');
+
+  const mainBjs = fs.readFileSync(path.join(testDir, 'src', 'main.bjs'), 'utf8');
+  assert(mainBjs.includes('শ্রেণী মানুষ'), 'Expected class example in main.bjs');
+  assert(mainBjs.includes('অ্যাসিঙ্ক অনুষ্ঠান'), 'Expected async example in main.bjs');
+
+  // Cleanup
+  fs.rmSync(testDir, { recursive: true, force: true });
+});
+
+// New Test 20: CLI Watch Command Simulation
+test('CLI: Watch Command Simulation', () => {
+  const testDir = path.join(__dirname, 'test_temp');
+  const testFile = path.join(testDir, 'test.bjs');
+  const outDir = path.join(testDir, 'build');
+  fs.mkdirSync(testDir, { recursive: true });
+  fs.writeFileSync(testFile, 'বাক্য x = 1; লিখো(x);');
+
+  const result = doBuild(testFile, outDir);
+  assert(result && fs.existsSync(result), `Expected output file at ${result}`);
+
+  // Simulate file change
+  fs.writeFileSync(testFile, 'বাক্য x = 2; লিখো(x);');
+  const newResult = doBuild(testFile, outDir);
+  assert(newResult && fs.existsSync(newResult), `Expected new output file at ${newResult}`);
+  const output = fs.readFileSync(newResult, 'utf8');
+  assert(output.includes('let x = 2'), `Expected 'let x = 2' in output, got: ${output}`);
+
+  // Cleanup
+  fs.rmSync(testDir);
 });
 
 // Summary

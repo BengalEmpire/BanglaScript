@@ -1,13 +1,16 @@
 {
   "name": "banglascript",
-  "version": "1.8.0",
-  "description": "বাংলা ভাষায় JavaScript প্রোগ্রামিং - BanglaScript Transpiler",
+  "version": "1.9.0",
+  "description": "Write JavaScript in Bangla with BanglaScript - a transpiler supporting variables, functions, classes, async, and CLI with build, run, watch, and init commands",
   "main": "lib/transpile-ast.js",
   "bin": {
     "bjs": "bin/bjs.js"
   },
   "scripts": {
-    "test": "node test/test.js"
+    "test": "node test/test.js",
+    "build": "bjs build src/*.bjs -o build",
+    "watch": "bjs watch src/*.bjs -o build",
+    "run": "bjs run src/main.bjs"
   },
   "keywords": [
     "bangla",
@@ -15,11 +18,13 @@
     "banglascript",
     "transpiler",
     "bengali-programming",
+    "javascript",
+    "cli",
     "বাংলা"
   ],
   "author": "Mahmud Rahman",
   "license": "MIT",
-"dependencies": {
+  "dependencies": {
     "@babel/core": "^7.23.0",
     "@babel/generator": "^7.23.0",
     "@babel/parser": "^7.23.0",

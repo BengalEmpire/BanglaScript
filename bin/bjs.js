@@ -1,107 +1,116 @@
 const { program } = require('commander');
 const fs = require('fs');
-const path = require('path');
-const chokidar = require('chokidar');
+const { spawn } = require('child_process');
 const { transpileWithSourceMap } = require('../lib/transpile-ast');
 const pkg = require('../package.json');
-const { spawn } = require('child_process');
-const { ensureDir, doBuild, watchAndBuild, initProject, showKeywords } = require('../lib/utils');
+const { doBuild, watchAndBuild, initProject, showKeywords } = require('../lib/utils');
+const { transformSync } = require('@babel/core');
 
-// Commander CLI setup
+// Setup CLI with commander
 program
   .name('bjs')
   .version(pkg.version)
-  .description('BanglaScript - বাংলা ভাষায় JavaScript প্রোগ্রামিং। সহজে বাংলায় কোড লিখুন এবং JavaScript-এ রূপান্তর করুন।');
+  .description('BanglaScript CLI - Write JavaScript in Bangla. Install globally with `npm i -g banglascript`.');
 
-// Build command - .bjs থেকে .js তৈরি করো
+// Build command
 program
   .command('build [files...]')
+  .description('Build .bjs file(s) to .js. Supports multiple files.')
   .option('-o, --out <dir>', 'Output directory', 'build')
-  .option('-w, --watch', 'Watch mode')
-  .option('-m, --minify', 'Minify the output JS')
-  .description('.bjs ফাইল(স) থেকে .js ফাইল তৈরি করো। একাধিক ফাইল দেওয়া যাবে।')
+  .option('-m, --minify', 'Minify output JS')
+  .option('--no-translit', 'Do not transliterate Bangla identifiers to Latin')
+  .option('-w, --watch', 'Watch mode for auto-build on file changes')
   .action((files, opts) => {
     if (files.length === 0) {
-      console.error('❌ কমপক্ষে একটি .bjs ফাইল দিন।');
+      console.error('❌ Provide at least one .bjs file.');
       process.exit(1);
     }
     if (opts.watch) {
-      watchAndBuild(files, opts.out, opts.minify);
+      watchAndBuild(files, opts.out, opts.minify, opts.noTranslit);
     } else {
-      files.forEach(file => doBuild(file, opts.out, opts.minify));
+      files.forEach(file => doBuild(file, opts.out, opts.minify, opts.noTranslit));
     }
   });
 
-// Run command - Build করে সাথে সাথে চালাও
+// Run command
 program
   .command('run <file>')
+  .description('Build and run .bjs file with Node.js')
   .option('-o, --out <dir>', 'Output directory', 'build')
-  .option('-m, --minify', 'Minify the output JS')
-  .option('-a, --args <args...>', 'Arguments to pass to the Node.js process')
-  .description('.bjs ফাইল build করে Node.js দিয়ে চালাও')
+  .option('-m, --minify', 'Minify output JS')
+  .option('--no-translit', 'Do not transliterate Bangla identifiers to Latin')
+  .option('-a, --args <args...>', 'Arguments for Node.js process')
   .action((file, opts) => {
-    const outFile = doBuild(file, opts.out, opts.minify);
+    const outFile = doBuild(file, opts.out, opts.minify, opts.noTranslit);
     if (!outFile) {
-      console.error('❌ Build ব্যর্থ হয়েছে');
+      console.error('❌ Build failed');
       process.exit(1);
     }
     
-    console.log(`\n🚀 চলছে: ${path.basename(outFile)}\n`);
+    console.log(`\n🚀 Running: ${outFile}\n`);
     const nodeArgs = opts.args || [];
     const nodeProc = spawn(process.execPath, [outFile, ...nodeArgs], { stdio: 'inherit' });
     nodeProc.on('close', (code) => {
       if (code !== 0) {
-        console.error(`\n❌ প্রোগ্রাম exit code ${code} দিয়ে শেষ হয়েছে`);
+        console.error(`\n❌ Program exited with code ${code}`);
       }
       process.exit(code);
     });
   });
 
-// Watch command - ফাইল পরিবর্তন হলে auto-build
+// Watch command
 program
   .command('watch [files...]')
+  .description('Watch .bjs file(s) and auto-build on change')
   .option('-o, --out <dir>', 'Output directory', 'build')
-  .option('-m, --minify', 'Minify the output JS')
-  .description('.bjs ফাইল(স) watch করো এবং পরিবর্তন হলে auto-build করো')
+  .option('-m, --minify', 'Minify output JS')
+  .option('--no-translit', 'Do not transliterate Bangla identifiers to Latin')
   .action((files, opts) => {
     if (files.length === 0) {
-      console.error('❌ কমপক্ষে একটি .bjs ফাইল দিন।');
+      console.error('❌ Provide at least one .bjs file.');
       process.exit(1);
     }
-    watchAndBuild(files, opts.out, opts.minify);
+    watchAndBuild(files, opts.out, opts.minify, opts.noTranslit);
   });
 
-// Init command - Example প্রজেক্ট তৈরি করো
+// Init command
 program
   .command('init [name]')
-  .description('নতুন BanglaScript প্রজেক্ট তৈরি করো')
+  .description('Initialize a new BanglaScript project')
   .action((name) => {
-    initProject(name || 'my-project');
+    initProject(name || 'my-bangla-project');
   });
 
-// Info command - Keyword তথ্য দেখাও
+// Keywords command
 program
   .command('keywords')
-  .description('সব BanglaScript keywords দেখাও')
+  .description('Display all BanglaScript keywords')
   .action(() => {
     showKeywords();
   });
 
-// New command: Transpile direct code from stdin
+// Transpile command (from stdin)
 program
   .command('transpile')
-  .option('-m, --minify', 'Minify the output JS')
-  .description('সরাসরি BanglaScript কোড ইনপুট দিয়ে JavaScript-এ রূপান্তর করো (stdin থেকে)')
+  .description('Transpile BanglaScript code from stdin to JavaScript')
+  .option('-m, --minify', 'Minify output JS')
+  .option('--no-translit', 'Do not transliterate Bangla identifiers to Latin')
   .action((opts) => {
     let input = '';
+    process.stdin.resume();
+    process.stdin.setEncoding('utf8');
     process.stdin.on('data', chunk => { input += chunk; });
     process.stdin.on('end', () => {
       try {
-        const { code } = transpileWithSourceMap(input.trim(), 'stdin.bjs');
-        const output = opts.minify ? minifyCode(code) : code;
+        const { code } = transpileWithSourceMap(input.trim(), 'stdin.bjs', opts.noTranslit);
+        let output = code;
+        if (opts.minify) {
+          const minified = transformSync(output, { presets: ['minify'], comments: false });
+          output = minified.code;
+        }
         console.log(output);
       } catch (error) {
-        console.error('❌ Transpile ব্যর্থ: ' + error.message);
+        console.error(`❌ Transpile failed: ${error.message}`);
         process.exit(1);
       }
     });
@@ -109,17 +118,7 @@ program
 
 program.parse(process.argv);
 
-// যদি কোন command না দেওয়া হয়, help দেখাও
+// Show help if no command
 if (process.argv.length === 2) {
   program.help();
-}
-
-// Helper for minification 
-function minifyCode(code) {
-  const babel = require('@babel/core');
-  const result = babel.transformSync(code, {
-    presets: ['minify'],
-    comments: false
-  });
-  return result.code;
 }
