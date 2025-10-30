@@ -5,6 +5,8 @@ const { transpileWithSourceMap } = require('../lib/transpile-ast');
 const pkg = require('../package.json');
 const { doBuild, watchAndBuild, initProject, showKeywords } = require('../lib/utils');
 const { transformSync } = require('@babel/core');
+const glob = require('glob');
+const path = require('path');
 
 // Setup CLI with commander
 program
@@ -12,23 +14,33 @@ program
   .version(pkg.version)
   .description('BanglaScript CLI - Write JavaScript in Bangla. Install globally with `npm i -g banglascript`.');
 
+// Helper to expand glob patterns
+function expandFiles(files) {
+  return files.flatMap(f => glob.sync(f));
+}
+
 // Build command
 program
   .command('build [files...]')
-  .description('Build .bjs file(s) to .js. Supports multiple files.')
+  .description('Build .bjs file(s) to .js. Supports multiple files and glob patterns.')
   .option('-o, --out <dir>', 'Output directory', 'build')
   .option('-m, --minify', 'Minify output JS')
   .option('--no-translit', 'Do not transliterate Bangla identifiers to Latin')
   .option('-w, --watch', 'Watch mode for auto-build on file changes')
   .action((files, opts) => {
-    if (files.length === 0) {
-      console.error('❌ Provide at least one .bjs file.');
+    if (!files || files.length === 0) {
+      console.error('❌ Provide at least one .bjs file or glob pattern');
+      process.exit(1);
+    }
+    const expanded = expandFiles(files);
+    if (expanded.length === 0) {
+      console.error('❌ No files matched');
       process.exit(1);
     }
     if (opts.watch) {
-      watchAndBuild(files, opts.out, opts.minify, opts.noTranslit);
+      watchAndBuild(expanded, opts.out, opts.minify, opts.noTranslit);
     } else {
-      files.forEach(file => doBuild(file, opts.out, opts.minify, opts.noTranslit));
+      expanded.forEach(file => doBuild(file, opts.out, opts.minify, opts.noTranslit));
     }
   });
 
@@ -41,12 +53,16 @@ program
   .option('--no-translit', 'Do not transliterate Bangla identifiers to Latin')
   .option('-a, --args <args...>', 'Arguments for Node.js process')
   .action((file, opts) => {
-    const outFile = doBuild(file, opts.out, opts.minify, opts.noTranslit);
+    const expanded = expandFiles([file]);
+    if (expanded.length === 0) {
+      console.error('❌ File not found');
+      process.exit(1);
+    }
+    const outFile = doBuild(expanded[0], opts.out, opts.minify, opts.noTranslit);
     if (!outFile) {
       console.error('❌ Build failed');
       process.exit(1);
     }
-    
     console.log(`\n🚀 Running: ${outFile}\n`);
     const nodeArgs = opts.args || [];
     const nodeProc = spawn(process.execPath, [outFile, ...nodeArgs], { stdio: 'inherit' });
@@ -61,16 +77,21 @@ program
 // Watch command
 program
   .command('watch [files...]')
-  .description('Watch .bjs file(s) and auto-build on change')
+  .description('Watch .bjs file(s) and auto-build on change. Supports glob patterns.')
   .option('-o, --out <dir>', 'Output directory', 'build')
   .option('-m, --minify', 'Minify output JS')
   .option('--no-translit', 'Do not transliterate Bangla identifiers to Latin')
   .action((files, opts) => {
-    if (files.length === 0) {
-      console.error('❌ Provide at least one .bjs file.');
+    if (!files || files.length === 0) {
+      console.error('❌ Provide at least one .bjs file or glob pattern.');
       process.exit(1);
     }
-    watchAndBuild(files, opts.out, opts.minify, opts.noTranslit);
+    const expanded = expandFiles(files);
+    if (expanded.length === 0) {
+      console.error('❌ No files matched');
+      process.exit(1);
+    }
+    watchAndBuild(expanded, opts.out, opts.minify, opts.noTranslit);
   });
 
 // Init command
@@ -108,7 +129,7 @@ program
           const minified = transformSync(output, { presets: ['minify'], comments: false });
           output = minified.code;
         }
-        console.log(output);
+        process.stdout.write(output + '\n');
       } catch (error) {
         console.error(`❌ Transpile failed: ${error.message}`);
         process.exit(1);
@@ -118,7 +139,6 @@ program
 
 program.parse(process.argv);
 
-// Show help if no command
 if (process.argv.length === 2) {
   program.help();
 }

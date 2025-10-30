@@ -9,6 +9,7 @@ tmp/
 # Ignore examples, tests, and docs
 examples/
 test/
+test_project
 tests/
 json
 docs/
@@ -20,7 +21,6 @@ README-dev.md
 .npmignore
 .gitattributes
 package-lock.json
-VSCODE-EXTENSION/
 
 # Ignore editor and system files
 *.log

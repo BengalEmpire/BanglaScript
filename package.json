@@ -1,8 +1,13 @@
 {
   "name": "banglascript",
-  "version": "1.9.0",
-  "description": "Write JavaScript in Bangla with BanglaScript - a transpiler supporting variables, functions, classes, async, and CLI with build, run, watch, and init commands",
+  "version": "2.0.0",
+  "description": "BanglaScript: Write JavaScript in Bangla. Transpile Bangla code to JavaScript with support for variables, functions, classes, async, CLI, and more.",
   "main": "lib/transpile-ast.js",
+  "files": [
+    "bin/",
+    "lib/",
+    "README.md"
+  ],
   "bin": {
     "bjs": "bin/bjs.js"
   },
@@ -40,5 +45,8 @@
     "type": "git",
     "url": "https://github.com/BengalEmpire/BanglaScript.git"
   },
-  "homepage": "https://bangla-script.vercel.app"
+  "homepage": "https://bangla-script.vercel.app",
+  "publishConfig": {
+    "access": "public"
+  }
 }
