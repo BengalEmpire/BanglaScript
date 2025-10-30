@@ -12,11 +12,12 @@ BanglaScript একটি transpiler যা আপনাকে বাংলা �
 npm install -g banglascript
 ```
 
+Full Readme: [BanglaScript](https://banglascript.netlify.app/)
 
-**বাংলা ভাষায় কোড লিখুন**
 
 ---
-
+**বাংলা ভাষায় কোড লিখুন**
+---
 
 ## Project Links
 

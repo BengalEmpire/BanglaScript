@@ -35,8 +35,9 @@
     "@babel/parser": "^7.23.0",
     "@babel/preset-env": "^7.23.2",
     "babel-preset-minify": "^0.5.2",
+    "chokidar": "^3.5.3",
     "commander": "^11.0.0",
-    "chokidar": "^3.5.3"
+    "glob": "^11.0.3"
   },
   "engines": {
     "node": ">=14.0.0"
