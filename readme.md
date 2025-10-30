@@ -1,4 +1,4 @@
-# BanglaScript 2.0.0
+# BanglaScript 2.1.0 (recommended)
 
 **বাংলা ভাষায় JavaScript প্রোগ্রামিং!**
 
@@ -10,9 +10,20 @@ BanglaScript একটি transpiler যা আপনাকে বাংলা �
 
 ```bash
 npm install -g banglascript
+
 ```
 
-Full Readme: [BanglaScript](https://banglascript.netlify.app/)
+### Optional Check
+
+You can test it:
+
+```bash
+bjs --version
+```
+
+Full Readme: [BanglaScript](https://bangla-script.vercel.app/readme)
+
+Faced Microsoft JavaScript Error on Windows issues?: [Fix Guide](https://github.com/BengalEmpire/BanglaScript/blob/main/Fix_Guide/FIX_GUIDE(800A03EA).md)
 
 
 ---

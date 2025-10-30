@@ -5,6 +5,7 @@ dist/
 coverage/
 tmp/
 .cache/
+Fix_Guides/
 
 # Ignore examples, tests, and docs
 examples/
