@@ -1,4 +1,4 @@
-# BanglaScript 3.0.0-beta
+# BanglaScript 3.0.0
 
 **বাংলা ভাষায় JavaScript প্রোগ্রামিং!**
 
@@ -32,5 +32,6 @@ Faced Microsoft JavaScript Error on Windows issues?: [Fix Guide](<https://github
 ## Project Links
 
 - **Docs Site:** [https://bangla-script.vercel.app/](https://bangla-script.vercel.app/)
+- **VSCODE Extension:** [https://marketplace.visualstudio.com/items?itemName=BengalEmpire.banglascript](https://marketplace.visualstudio.com/items?itemName=BengalEmpire.banglascript)
 - **GitHub:** [https://github.com/BengalEmpire/BanglaScript](https://github.com/BengalEmpire/BanglaScript)
 - **NPM:** [https://npmjs.com/package/banglascript](https://npmjs.com/package/banglascript)
