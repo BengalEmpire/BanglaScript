@@ -1,34 +1,70 @@
 {
   "name": "banglascript",
-  "version": "2.2.0",
-  "description": "BanglaScript: Write JavaScript in Bangla. Transpile Bangla code to JavaScript with support for variables, functions, classes, async, CLI, and more.",
+  "version": "3.0.0-beta",
+  "description": "BanglaScript: Write JavaScript in Bangla. Transpile Bangla code to JavaScript with support for variables, functions, classes, async, CLI, and more. 🇧🇩",
   "main": "lib/transpile-ast.js",
+  "types": "lib/index.d.ts",
   "files": [
     "bin/",
     "lib/",
-    "README.md"
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "bin": {
-    "bjs": "bin/bjs.js"
+    "bjs": "bin/bjs.js",
+    "banglascript": "bin/bjs.js"
   },
   "scripts": {
     "test": "node test/test.js",
-    "build": "bjs build src/*.bjs -o build",
-    "watch": "bjs watch src/*.bjs -o build",
-    "run": "bjs run src/main.bjs"
+    "test:watch": "nodemon --exec 'npm test'",
+    "build": "bjs build examples/*.bjs -o build",
+    "watch": "bjs watch examples/*.bjs -o build",
+    "run": "bjs run examples/main.bjs",
+    "lint": "eslint lib/ bin/ --fix",
+    "format": "prettier --write '**/*.{js,json,md}'",
+    "prepublishOnly": "npm test",
+    "postinstall": "node bin/postinstall.js || true",
+    "version": "node bin/version.js && git add -A",
+    "postversion": "git push && git push --tags"
   },
   "keywords": [
     "bangla",
     "bengali",
     "banglascript",
     "transpiler",
+    "compiler",
     "bengali-programming",
     "javascript",
     "cli",
-    "বাংলা"
+    "বাংলা",
+    "programming-language",
+    "bengali-language",
+    "localization",
+    "i18n",
+    "babel",
+    "ast"
   ],
-  "author": "Mahmud Rahman",
+  "author": {
+    "name": "Mahmud Rahman",
+    "email": "your.email@example.com",
+    "url": "https://github.com/yourusername"
+  },
+  "contributors": [
+    {
+      "name": "Mahmud Rahman",
+      "email": "your.email@example.com"
+    }
+  ],
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BengalEmpire/BanglaScript/issues",
+    "email": "support@banglascript.dev"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/yourusername"
+  },
   "dependencies": {
     "@babel/core": "^7.23.0",
     "@babel/generator": "^7.23.0",
@@ -39,15 +75,32 @@
     "commander": "^11.0.0",
     "glob": "^11.0.3"
   },
-  "engines": {
-    "node": ">=14.0.0"
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.3",
+    "nodemon": "^3.0.1"
   },
+  "peerDependencies": {},
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/BengalEmpire/BanglaScript.git"
+    "url": "git+https://github.com/BengalEmpire/BanglaScript.git"
   },
   "homepage": "https://bangla-script.vercel.app",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
