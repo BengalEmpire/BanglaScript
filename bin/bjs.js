@@ -1,4 +1,9 @@
 #! /usr/bin/env node
+
+if (process.platform === 'win32') {
+  require('child_process').execSync('chcp 65001 > nul');
+}
+
 const { program } = require("commander");
 const fs = require("fs");
 const path = require("path");
