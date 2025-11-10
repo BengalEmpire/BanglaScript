@@ -1,4 +1,4 @@
-# BanglaScript 2.1.0 (recommended)
+# BanglaScript 3.0.0-beta
 
 **বাংলা ভাষায় JavaScript প্রোগ্রামিং!**
 
