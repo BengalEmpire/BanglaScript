@@ -1,4 +1,4 @@
-# BanglaScript 2.1.0 (recommended)
+# BanglaScript 3.0.0-beta
 
 **বাংলা ভাষায় JavaScript প্রোগ্রামিং!**
 
@@ -23,15 +23,14 @@ bjs --version
 
 Full Readme: [BanglaScript](https://bangla-script.vercel.app/readme)
 
-Faced Microsoft JavaScript Error on Windows issues?: [Fix Guide](https://github.com/BengalEmpire/BanglaScript/blob/main/Fix_Guide/FIX_GUIDE(800A03EA).md)
-
+Faced Microsoft JavaScript Error on Windows issues?: [Fix Guide](<https://github.com/BengalEmpire/BanglaScript/blob/main/Fix_Guide/FIX_GUIDE(800A03EA).md>)
 
 ---
-**বাংলা ভাষায় কোড লিখুন**
----
+
+## **বাংলা ভাষায় কোড লিখুন**
 
 ## Project Links
 
--   **Docs Site:**  [https://bangla-script.vercel.app/](https://bangla-script.vercel.app/)
--   **GitHub:**  [https://github.com/BengalEmpire/BanglaScript](https://github.com/BengalEmpire/BanglaScript)
--   **NPM:**  [https://npmjs.com/package/banglascript](https://npmjs.com/package/banglascript)
+- **Docs Site:** [https://bangla-script.vercel.app/](https://bangla-script.vercel.app/)
+- **GitHub:** [https://github.com/BengalEmpire/BanglaScript](https://github.com/BengalEmpire/BanglaScript)
+- **NPM:** [https://npmjs.com/package/banglascript](https://npmjs.com/package/banglascript)
