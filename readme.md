@@ -1,10 +1,10 @@
-# BanglaScript 3.0.0
+# BanglaScript 3.x.x
 
 **বাংলা ভাষায় JavaScript প্রোগ্রামিং!**
 
 BanglaScript একটি transpiler যা আপনাকে বাংলা ভাষায় JavaScript কোড লিখতে দেয়। আপনার বাংলা কোড স্বয়ংক্রিয়ভাবে JavaScript এ রূপান্তরিত হয় এবং Node.js দিয়ে চলে।
 
-## 🚀 ইনস্টলেশন
+## Installation && Guide
 
 ### Global Installation (সুপারিশকৃত)
 
@@ -13,6 +13,8 @@ npm install -g banglascript
 
 ```
 
+![Terminal: npm install -g banglascript](https://res.cloudinary.com/dqovjmmlx/image/upload/v1762848104/npm-install_meluzq.gif)
+
 ### Optional Check
 
 You can test it:
@@ -20,6 +22,28 @@ You can test it:
 ```bash
 bjs --version
 ```
+
+![Terminal: bjs --version](https://res.cloudinary.com/dqovjmmlx/image/upload/v1762848104/version_hmfomq.gif)
+
+### Create Project
+
+You can initialize project:
+
+```bash
+bjs init [project Name]
+```
+
+![Terminal: bjs init [project name]](https://res.cloudinary.com/dqovjmmlx/image/upload/v1762848104/projectinit_rptrw1.gif)
+
+### help
+
+You can test it:
+
+```bash
+bjs --help
+```
+
+![Terminal: bjs --help](https://res.cloudinary.com/dqovjmmlx/image/upload/v1762848104/help_dqd9g7.gif)
 
 Full Readme: [BanglaScript](https://bangla-script.vercel.app/readme)
 
