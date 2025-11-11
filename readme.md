@@ -43,11 +43,16 @@ You can test it:
 bjs --help
 ```
 
-![Terminal: bjs --help](https://res.cloudinary.com/dqovjmmlx/image/upload/v1762848104/help_dqd9g7.gif)
+![Terminal: bjs --help](https://ik.imagekit.io/codestation/help.gif?updatedAt=1762882414256)
 
 Full Readme: [BanglaScript](https://bangla-script.vercel.app/readme)
 
 Faced Microsoft JavaScript Error on Windows issues?: [Fix Guide](<https://github.com/BengalEmpire/BanglaScript/blob/main/Fix_Guide/FIX_GUIDE(800A03EA).md>)
+
+
+Terminal বা CMD তে বাংলা লেখা সাপোর্ট করছে না? [পড়ুন](https://github.com/BengalEmpire/BanglaScript/blob/main/Fix_Guide/Configuring_UTF-8_Support_in_Windows_Terminal.md)
+
+**Download করুন Terminal: https://apps.microsoft.com/detail/9N0DX20HK701?hl=en-us&gl=US&ocid=pdpshare** 
 
 ---
 
