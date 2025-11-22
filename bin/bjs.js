@@ -69,6 +69,7 @@ Examples:
   $ bjs run main.bjs                Build and run
   $ bjs watch src/**/*.bjs          Watch mode
   $ bjs init my-project             Create new project
+  $ bjs init --web my-web-project   Create new web project
   $ bjs keywords                    Show all keywords
   $ bjs eval "লিখো('হ্যালো');"      Evaluate code directly
   $ echo "লিখো('test');" | bjs transpile   Transpile from stdin
@@ -191,8 +192,9 @@ program
 program
   .command("init [name]")
   .description("Initialize a new BanglaScript project")
-  .action((name) => {
-    initProject(name || "my-bangla-project");
+  .option("--web", "Initialize as a web project with HTML and CSS")
+  .action((name, opts) => {
+    initProject(name || "my-bangla-project", opts.web);
   });
 
 // Keywords command

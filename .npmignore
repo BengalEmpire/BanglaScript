@@ -14,6 +14,7 @@ test_project
 tests/
 json
 docs/
+FileStructure.md
 README-dev.md
 
 # Ignore git and config files
@@ -30,6 +31,7 @@ package-lock.json
 *.DS_Store
 .env
 .vscode/
+.vs/
 .idea/
 
 

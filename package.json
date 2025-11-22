@@ -1,15 +1,13 @@
 {
   "name": "banglascript",
-  "version": "3.3.3",
+  "version": "3.4.2",
   "description": "BanglaScript: Write JavaScript in Bangla. Transpile Bangla code to JavaScript with support for variables, functions, classes, async, CLI, and more. 🇧🇩",
   "main": "lib/transpile-ast.js",
   "types": "lib/index.d.ts",
   "files": [
     "bin/",
     "lib/",
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md"
+    "README.md"
   ],
   "bin": {
     "bjs": "bin/bjs.js",

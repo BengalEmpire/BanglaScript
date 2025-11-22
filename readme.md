@@ -35,6 +35,17 @@ bjs init [project Name]
 
 ![Terminal: bjs init [project name]](https://res.cloudinary.com/dqovjmmlx/image/upload/v1762848104/projectinit_rptrw1.gif)
 
+
+### Create Web Project
+
+You can initialize web project:
+
+```bash
+bjs init --web [project Name]
+```
+
+![Terminal: bjs init --web [project name]](https://res.cloudinary.com/dqovjmmlx/image/upload/v1763813066/web_wmmu8w.gif)
+
 ### help
 
 You can test it:
@@ -55,6 +66,14 @@ Terminal বা CMD তে বাংলা লেখা সাপোর্ট �
 **Download করুন Terminal: https://apps.microsoft.com/detail/9N0DX20HK701?hl=en-us&gl=US&ocid=pdpshare** 
 
 ---
+
+## Next Update
+
+- Add a command to initialize a project for developing desktop software using BanglaScript (Chromium rendering engine)
+
+- Integrate Machine Learning features
+
+- Expand capabilities to include more functionality possible with JavaScript
 
 ## **বাংলা ভাষায় কোড লিখুন**
 

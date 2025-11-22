@@ -1,22 +1,9 @@
 # Changelog
 
-
-## [3.0.0] - 2025-11-10
-
-### Added
-- 
-
-### Changed
-- 
-
-### Fixed
-- 
-
-### Removed
-- 
+All notable changes to BanglaScript will be documented in this file.
 
 
-## [3.0.0-beta] - 2025-11-10
+## [3.4.2] - 2025-11-22
 
 ### Added
 - 
@@ -29,3 +16,4 @@
 
 ### Removed
 - 
+
