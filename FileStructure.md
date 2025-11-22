@@ -6,6 +6,7 @@
 ├── lib/
 │   ├── keywords.js
 │   ├── common_map.js
+│   ├── exampleCodes.js
 │   ├── banglaToLatin.js
 │   ├── tokenizer.js
 │   ├── translate-words.js
