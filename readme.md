@@ -15,8 +15,6 @@ BanglaScript একটি transpiler যা আপনাকে বাংলা �
 - 🎯 **Modern JavaScript Support**: Optional chaining (`?.`), nullish coalescing (`??`), and more
 - ✨ **Zero Breaking Changes**: All existing code works perfectly!
 
-👉 See [RELEASE_NOTES.md](RELEASE_NOTES.md) | [IMPROVEMENTS.md](IMPROVEMENTS.md) | [WORK_SUMMARY.md](WORK_SUMMARY.md)
-
 ## Installation && Guide
 
 ### Global Installation (সুপারিশকৃত)
