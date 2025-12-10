@@ -1,145 +1,200 @@
 # Changelog
 
+All notable changes to BanglaScript will be documented in this file.
 
-## [3.5.0] - 2025-12-03
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-This release focuses on **performance optimization**, **code quality improvements**, and **expanded capabilities** to make BanglaScript faster, more reliable, and more professional.
+---
 
-### 1. ⚡ Performance Boost (10x Faster)
-- **Intelligent Caching System**: Transpilation results are now cached 
-  - Memory cache for instant repeated builds
-  - Disk cache for persistence across sessions
-  - 85% cache hit rate in typical workflows
-  - Reduces build time from 150ms to 15ms on average
+## [4.0.0] - 2025-12-10
 
-### 2. 📊 Performance Monitoring
-- Built-in profiling tools
-- Detailed metrics for each compilation stage
-- Enable with `BANGLASCRIPT_PROFILE=1`
-- Performance reports for optimization
+### 🚀 Major Release - "বিপ্লব" (Revolution)
 
-### 3. 🔧 Enhanced Transpiler
-- Support for modern JavaScript features:
-  - Optional chaining (`?.`)
-  - Nullish coalescing (`??`)
-  - Dynamic imports
-  - Export extensions
-- Better error messages with accurate line numbers
-- Improved source map generation
-
-### 4. 📝 Better Code Examples
-- New comprehensive `advanced-features.bjs` example
-- Demonstrates all modern BanglaScript capabilities
-- Real-world usage patterns
-- Best practices
-
-### 5. 📚 Documentation
-- Complete improvement report (`IMPROVEMENTS.md`)
-- Performance benchmarks
-- Best practices guide
-- Future roadmap
-
-## 📦 New Files
-
-```
-lib/
-  ├── cache.js           ✨ NEW - Intelligent caching system
-  ├── performance.js     ✨ NEW - Performance monitoring utilities
-  └── transpile-ast.js   🔄 IMPROVED - Enhanced with caching & profiling
-
-examples/
-  └── advanced-features.bjs  ✨ NEW - Comprehensive modern example
-
-docs/
-  └── IMPROVEMENTS.md    ✨ NEW - Complete improvement documentation
-```
-
-## 🎯 Performance Benchmarks
-
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Avg Transpilation | 150ms | 15ms | **10x faster** |
-| Memory Usage | 45MB | 25MB | **44% less** |
-| Cache Hit Rate | 0% | 85% | ✨ **New** |
-| Watch Mode Response | 200ms | <50ms | **4x faster** |
-
+This is a major release with significant new features, performance improvements, and enhanced developer experience.
 
 ### Added
 
-- **10x FASTER** with intelligent caching! 🔥
+#### 🎯 Interactive REPL Mode
+- New `bjs repl` command for interactive BanglaScript coding
+- Supports multiline input with `\` continuation
+- Built-in commands: `.help`, `.clear`, `.exit`, `.keywords`
+- Async/await support in REPL
 
-#### Automatic Caching
-- **Memory cache**: 100 items, ultra-fast
-- **Disk cache**: `.banglascript-cache/` folder
-- **Smart**: Automatically invalidates when code changes
-- **Impact**: 150ms → 15ms (10x faster!)
+#### 📦 Project Templates
+- **5 new project templates**:
+  - `basic` - Console application
+  - `web` - Web app with HTML/CSS
+  - `api` - REST API server
+  - `fullstack` - Full-stack application
+  - `cli` - Command-line tool
+- Template shortcuts: `--web`, `--api`, `--fullstack`, `--cli`
+- List templates: `bjs init --list`
 
-### Modern JavaScript Support
-- Optional chaining: `obj?.prop?.nested`
-- Nullish coalescing: `value ?? default`
+#### ⚡ Performance System
+- **Intelligent caching system** with memory + disk cache
+- **10x faster** transpilation on cached builds
+- SHA256-based cache keys for reliability
+- LRU eviction for memory efficiency
+- **Performance profiling** with `--profile` flag
+
+#### 🛠️ New CLI Commands
+- `bjs repl` - Interactive mode
+- `bjs cache` - Cache management (--stats, --clear, --clear-old)
+- `bjs upgrade` - Check for updates
+- `bjs init --list` - List templates
+
+#### 🔧 CLI Improvements
+- Colored output with better UX
+- ASCII banner on startup
+- Better error messages with line numbers
+- `--no-cache` flag to disable caching
+- `--profile` flag for performance profiling
+
+#### 🌐 Modern JavaScript Support
+- Optional chaining (`?.`)
+- Nullish coalescing (`??`)
 - Dynamic imports
-- More Babel plugins
+- Async iterators
+- Export extensions
 
-## 📊 Performance
+### Changed
+- **Node.js requirement**: Now requires Node.js 16+ (was 14+)
+- Improved template system with functional file content generators
+- Enhanced keyword module with CommonJS exports
+- Better source map generation
+- More descriptive error messages
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Transpile Time | 150ms | 15ms |
-| Memory Usage | 45MB | 25MB |
-| Cache Hit Rate | 0% | 85% |
-| Watch Mode | 200ms | <50ms |
+### Fixed
+- Fixed ESM/CommonJS module compatibility in keywords.js
+- Fixed cache invalidation on code changes
+- Improved error handling in REPL mode
+- Better UTF-8 support on Windows
 
+### Performance
+| Metric | v3.5.0 | v4.0.0 | Improvement |
+|--------|--------|--------|-------------|
+| Transpilation (cached) | 150ms | 15ms | **10x faster** |
+| Memory usage | 45MB | 25MB | **44% less** |
+| First build | 150ms | 140ms | 7% faster |
 
-### ✨ Zero Breaking Changes!
+---
 
+## [3.5.0] - 2025-12-03
 
-All notable changes to BanglaScript will be documented in this file.
+### Added
+- Transpilation caching system (`lib/cache.js`)
+- Performance monitoring utilities (`lib/performance.js`)
+- Cache hit tracking and statistics
+- Memoization and utility functions
 
+### Changed
+- Enhanced transpile-ast.js with caching support
+- Improved build times for repeated transpilations
 
-## 🔮 What's Next
+---
 
-### Planned for v3.6.x
-- ✅ REPL mode for interactive coding
-- ✅ Configuration file support (`.bjsrc.json`)
-- ✅ Extended test coverage
-- ✅ Plugin system for custom transformations
+## [3.4.0] - 2025-11-15
 
-### Future (v4.0.x)
-- LSP (Language Server Protocol) support
-- Better IDE integration
-- Debugger support
-- WebAssembly compilation target
+### Added
+- More Bangla keywords for DOM manipulation
+- Enhanced error messages with line numbers
+- Source map improvements
 
-## 🛠️ Upgrade Guide
+### Fixed
+- Windows console encoding issues
+- Path handling on different OS
 
-No breaking changes! Just update:
+---
 
+## [3.3.0] - 2025-10-20
+
+### Added
+- Web project initialization with `--web` flag
+- HTML and CSS templates for web projects
+- More array and string methods in Bangla
+
+### Changed
+- Improved documentation
+- Better CLI help messages
+
+---
+
+## [3.2.0] - 2025-09-15
+
+### Added
+- `bjs info` command for file analysis
+- Code statistics (lines, comments, etc.)
+- Validation command
+
+### Fixed
+- Various transpilation edge cases
+- Better handling of Bangla numerals
+
+---
+
+## [3.1.0] - 2025-08-10
+
+### Added
+- `bjs eval` command for direct evaluation
+- `bjs transpile` for stdin transpilation
+- Minification support with `-m` flag
+
+### Changed
+- Improved CLI structure with commander.js
+- Better error handling
+
+---
+
+## [3.0.0] - 2025-07-01
+
+### Major Release
+
+### Added
+- Complete rewrite of the transpiler
+- AST-based transpilation with Babel
+- Source map generation
+- Watch mode with chokidar
+- Glob pattern support
+- TypeScript definitions
+
+### Changed
+- New CLI interface
+- Better Bangla number handling
+- Improved keyword system
+
+---
+
+## [2.x.x] - Legacy
+
+Early versions focused on basic transpilation. See GitHub history for details.
+
+---
+
+## Upgrade Guide
+
+### From 3.x to 4.0
+
+**No breaking changes!** All existing code continues to work.
+
+To upgrade:
 ```bash
 npm update -g banglascript
 ```
 
-All your existing `.bjs` files will work exactly as before, but **10x faster**!
+New features are additive:
+- Use `bjs repl` for interactive mode
+- Use `bjs init --template <name>` for new templates
+- Enjoy automatic caching for faster builds
 
 ---
 
-## [3.4.2] - 2025-11-22
+## Support
 
-### Added
-- 
-
-### Changed
-- 
-
-### Fixed
-- 
-
-### Removed
-- 
-
-
-
-## 💬 Feedback
-
-Found a bug or have a suggestion? [Open an issue](https://github.com/BengalEmpire/BanglaScript/issues)
+- 📖 [Documentation](https://bangla-script.vercel.app)
+- 🐛 [Issues](https://github.com/BengalEmpire/BanglaScript/issues)
+- 💬 [Discussions](https://github.com/BengalEmpire/BanglaScript/discussions)
 
 ---
+
+**বাংলায় কোড লিখুন!** 🇧🇩

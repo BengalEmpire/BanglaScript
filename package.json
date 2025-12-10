@@ -1,13 +1,14 @@
 {
   "name": "banglascript",
-  "version": "3.5.0",
-  "description": "BanglaScript: Write JavaScript in Bangla. Transpile Bangla code to JavaScript with support for variables, functions, classes, async, CLI, and more. 🇧🇩",
+  "version": "4.0.0",
+  "description": "BanglaScript: Write JavaScript in Bangla. Full-featured transpiler with CLI, REPL, project templates, caching, and modern JavaScript support. 🇧🇩",
   "main": "lib/transpile-ast.js",
   "types": "lib/index.d.ts",
   "files": [
     "bin/",
     "lib/",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "bin": {
     "bjs": "bin/bjs.js",
@@ -35,11 +36,15 @@
     "bengali-programming",
     "javascript",
     "cli",
+    "repl",
     "বাংলা",
     "programming-language",
     "bengali-language",
     "babel",
-    "ast"
+    "ast",
+    "es6",
+    "nodejs",
+    "web-development"
   ],
   "author": {
     "name": "Mahmud Rahman",
@@ -74,8 +79,8 @@
   },
   "peerDependencies": {},
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.0.0"
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
   },
   "os": [
     "darwin",
@@ -94,5 +99,9 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/mahmud-r-farhan"
   }
 }
