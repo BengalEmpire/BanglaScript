@@ -15,8 +15,8 @@
     "banglascript": "bin/bjs.js"
   },
   "scripts": {
-    "test": "node test/test.js",
-    "test:watch": "nodemon --exec 'npm test'",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "build": "bjs build examples/*.bjs -o build",
     "watch": "bjs watch examples/*.bjs -o build",
     "run": "bjs run examples/main.bjs",
@@ -24,6 +24,7 @@
     "format": "prettier --write '**/*.{js,json,md}'",
     "prepublishOnly": "npm test",
     "postinstall": "node bin/postinstall.js || true",
+    "prepare": "husky install",
     "version": "node bin/version.js && git add -A",
     "postversion": "git push && git push --tags"
   },
@@ -75,7 +76,18 @@
   "devDependencies": {
     "eslint": "^8.50.0",
     "prettier": "^3.0.3",
-    "nodemon": "^3.0.1"
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.0.0"
+  },
+  "lint-staged": {
+    "**/*.{js,json,md}": [
+      "prettier --write"
+    ],
+    "lib/**/*.js": [
+      "eslint --fix"
+    ]
   },
   "peerDependencies": {},
   "engines": {
