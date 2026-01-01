@@ -208,6 +208,15 @@ bjs build main.bjs --no-cache     # Disable cache
 | ধরো | catch |
 
 See all keywords: `bjs keywords`
+ 
+### 🆕 v4.1 Updates (Modern ES6)
+| Bangla | JavaScript |
+|--------|------------|
+| ম্যাপ, সেট | Map, Set |
+| প্রমিজ | Promise |
+| তারিখ | Date |
+| সমাধান | resolve |
+| প্রত্যাখ্যান | reject |
 
 ---
 

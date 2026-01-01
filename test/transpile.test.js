@@ -112,4 +112,38 @@ describe('BanglaScript Transpiler', () => {
             expect(output).toContain('catch');
         });
     });
+
+    describe('Modern ES6 Features', () => {
+        test('should transpile Map and Set (ম্যাপ, সেট)', () => {
+            const input = `
+        ধ্রুবক map = নতুন ম্যাপ();
+        ধ্রুবক set = নতুন সেট();
+      `;
+            const expected = `
+        const map = new Map();
+        const set = new Set();
+      `;
+            expect(normalize(transpile(input))).toBe(normalize(expected));
+        });
+
+        test('should transpile Promise (প্রমিজ)', () => {
+            const input = `
+        ধ্রুবক p = নতুন প্রমিজ((সমাধান, প্রত্যাখ্যান) => {
+          সমাধান("ok");
+        });
+      `;
+            const expected = `
+        const p = new Promise((resolve, reject) => {
+          resolve("ok");
+        });
+      `;
+            // Note: 'সমাধান' -> 'resolve' works because we added it to KEYWORDS.
+            // However, if they are used as function arguments in the callback `(সমাধান, প্রত্যাখ্যান)`, 
+            // the tokenizer treats them as identifiers (words). 
+            // The `transpile-ast.js` logic checks KEYWORDS for identifiers too and replaces them.
+            // So `(resolve, reject)` should appear in the output.
+
+            expect(normalize(transpile(input))).toBe(normalize(expected));
+        });
+    });
 });
