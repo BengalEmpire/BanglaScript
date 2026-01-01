@@ -1,4 +1,4 @@
-# Build artifacts
+﻿# Build artifacts
 build/
 dist/
 *.log
@@ -15,45 +15,12 @@ dist/
 
 # Git
 .git/
-.gitignore
 .gitattributes
 
-# CI/CD
-.github/
-.travis.yml
-.gitlab-ci.yml
-circle.yml
-.circleci/
-
-# Development dependencies
+# Dependencies
 node_modules/
 coverage/
-.nyc_output/
-
-# Documentation source
-*.md.backup
-docs-src/
 
 # Environment
 .env
 .env.local
-.env.*.local
-
-# Misc
-TODO.md
-NOTES.md
-.editorconfig
-.prettierrc
-.eslintrc*
-.babelrc
-jest.config.js
-rollup.config.js
-webpack.config.js
-
-# Source maps (optional - remove if you want to include them)
-# *.map
-
-# Lock files (npm will generate its own)
-yarn.lock
-pnpm-lock.yaml
-package-lock.json
