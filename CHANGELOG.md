@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.2.0] - 2026-08-30
+
+### 🚀 "আধুনিক" (Modern) - Performance & DX Overhaul
+
+This release brings significant performance improvements, modern JavaScript ES2024 support, a Node.js require hook, improved transliteration, better CLI tooling, and a fully validated test suite.
+
+### Added
+
+#### 🔗 Node.js Require Hook (`banglascript/register`)
+- New `lib/register.js` — call `require('banglascript/register')` once and then `require('./any-file.bjs')` natively in any Node.js project
+- No compilation step required; transpilation happens on-the-fly at require time
+
+#### ⚡ True LRU Cache with TTL (`lib/cache.js`)
+- Full LRU eviction: `.get()` refreshes recency so hot entries are never evicted unfairly
+- Configurable TTL expiry (default 1 hour) with per-entry timestamps
+- Resilient disk cache: read/write failures are caught and logged, never crash the process
+
+#### 🛠️ New CLI Commands
+- `bjs check <files...>` — fast syntax-only validation (bracket matching, structure checks) without full transpilation
+- `bjs bench` — throughput and LRU cache benchmarking to measure real-world performance
+
+#### 💬 REPL Tab Completion
+- `bjs repl` now provides Tab key completion across all ~400 Bengali keywords
+- Live keyword search with `.search <term>` inside the REPL
+
+#### 🌐 Modern Babel Plugin Support
+- Added parser plugins: `topLevelAwait`, `optionalChaining`, `nullishCoalescingOperator`, `numericSeparator`, `classProperties`, `classPrivateMethods`, `privateIn`, `dynamicImport`
+- Source maps now include correct `map.file` metadata
+
+#### 📖 New Keywords & Built-ins (ES2024)
+- Timer APIs: `টাইমার`, `বিরতি` (setTimeout / setInterval), `টাইমার_বাতিল`, `বিরতি_বাতিল` (clear variants)
+- Network: `আনা` (fetch), `অনুরোধ` (Request), `সাড়া` (Response)
+- Static helpers: `বস্তু_চাবি`, `বস্তু_মান`, `বস্তু_জোড়া`, `বস্তু_জমাট` (Object.keys/values/entries/freeze)
+- Math: `বর্গমূল`, `ঘাত`, `পরম`, `ছাদ`, `মেঝে`, `পূর্ণ`, `সর্বোচ্চ`, `সর্বনিম্ন`, `দৈব`, `সাইন`, `কোসাইন`, `ট্যানজেন্ট`, `লগ`
+- Resolved `ম্যাপ` duplicate key collision (`.map()` vs `Map` constructor now properly separated)
+
+#### 📝 TypeScript Definitions (`lib/index.d.ts`)
+- Full `.d.ts` type definitions for all public APIs: `transpile`, `transpileWithSourceMap`, `TranspileOptions`, `CacheStats`, `LRUCache`, `TranspileError`
+
+#### 🔡 Transliteration Improvements (`lib/banglaToLatin.js`)
+- `CONJUNCTS_MAP` for complex Bengali conjuncts: ক্ষ, জ্ঞ, ষ্ণ, ষ্ঠ, ণ্ড, ত্র, ক্র, প্র, শ্র, ব্দ, ব্ধ, ন্ট, ন্ড, স্ট, স্প, ম্প and more
+- Optimized digit conversion using a single-pass regex replace (faster for large files)
+
+#### 🔍 Enhanced Error Diagnostics
+- Code frame generator: visual pointer to the exact line and column of errors with ANSI highlights
+- Bracket validator gives the full structural diagnostic including unmatched opener position
+
+### Fixed
+- `lib/common_map.js`: Fixed broken `export const` (ES module syntax) → proper CommonJS `module.exports`
+- `lib/keywords.js`: Removed duplicate `ম্যাপ` key that caused silent collision between array `.map()` and `Map` constructor
+
+### Changed
+- `package.json` `scripts.test` now uses Node.js built-in test runner (`node --test`) — zero dependencies, no hanging on Windows
+- `exports` map added: `banglascript`, `banglascript/register`, `banglascript/cache`, `banglascript/utils`
+- CLI version banner is now dynamic, always reflects `package.json` version
+
+---
+
 ## [4.0.0] - 2025-12-10
 
 ### 🚀 Major Release - "বিপ্লব" (Revolution)

@@ -1,19 +1,25 @@
 #!/usr/bin/env node
 /**
- * BanglaScript CLI v4.0.0
- * Enhanced command-line interface with new features
+ * BanglaScript CLI v4.2.0
+ * Modern, powerful command-line interface for BanglaScript
  */
 
 if (process.platform === "win32") {
-  require("child_process").execSync("chcp 65001 > nul");
+  try {
+    require("child_process").execSync("chcp 65001 > nul");
+  } catch {
+    // Ignore error
+  }
 }
 
 const { program } = require("commander");
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 const { spawn } = require("child_process");
 const readline = require("readline");
 const { transpileWithSourceMap, transpile } = require("../lib/transpile-ast");
+const { KEYWORDS } = require("../lib/keywords");
 const pkg = require("../package.json");
 const {
   doBuild,
@@ -34,6 +40,9 @@ const {
 } = require("../lib/templates");
 const { cacheInstance } = require("../lib/cache");
 const { performanceMonitor } = require("../lib/performance");
+
+// Register hook
+require("../lib/register");
 
 // ==================== HELPERS ====================
 
@@ -88,7 +97,7 @@ function checkDependencies() {
   required.forEach((dep) => {
     try {
       require.resolve(dep);
-    } catch (e) {
+    } catch {
       missing.push(dep);
     }
   });
@@ -118,8 +127,10 @@ ${colors.yellow}Examples:${colors.reset}
   $ bjs watch src/**/*.bjs          Watch mode
   $ bjs init my-project             Create new project
   $ bjs init --template web myapp   Create web project
-  $ bjs repl                        Start interactive REPL
-  $ bjs keywords                    Show all keywords
+  $ bjs repl                        Start interactive REPL (with Tab completion!)
+  $ bjs check main.bjs              Syntax check without building
+  $ bjs bench src/main.bjs          Benchmark transpilation performance
+  $ bjs keywords --search লুপ       Search keywords
   $ bjs eval "লিখো('হ্যালো');"      Evaluate code directly
   $ bjs cache --stats               Show cache statistics
 
@@ -238,6 +249,126 @@ program
     });
   });
 
+// ==================== CHECK / VALIDATE COMMAND ====================
+
+program
+  .command("check [files...]")
+  .description("Check syntax and validity of .bjs file(s) without building")
+  .action((files) => {
+    if (!files || files.length === 0) {
+      printError("Provide at least one .bjs file to check");
+      process.exit(1);
+    }
+
+    const expanded = expandFiles(files);
+    if (expanded.length === 0) {
+      printError("No files found");
+      process.exit(1);
+    }
+
+    let hasErrors = false;
+
+    expanded.forEach((filePath) => {
+      const code = fs.readFileSync(filePath, "utf8");
+      const validation = validateBanglaScript(code);
+
+      console.log(`\n🔍 Checking: ${colors.cyan}${filePath}${colors.reset}`);
+
+      if (!validation.valid) {
+        hasErrors = true;
+        validation.errors.forEach((err) => {
+          console.error(
+            `  ${colors.red}✗ Line ${err.line}:${colors.reset} ${err.message}`,
+          );
+        });
+      } else {
+        try {
+          transpile(code, false, { filename: path.basename(filePath) });
+          printSuccess(`Syntax is valid!`);
+        } catch (err) {
+          hasErrors = true;
+          console.error(`  ${colors.red}✗ ${err.message}${colors.reset}`);
+        }
+      }
+    });
+
+    if (hasErrors) {
+      console.log();
+      process.exit(1);
+    } else {
+      console.log(`\n${colors.green}All files passed validation!${colors.reset}\n`);
+    }
+  });
+
+// ==================== BENCHMARK COMMAND ====================
+
+program
+  .command("bench [files...]")
+  .description("Benchmark BanglaScript transpilation throughput")
+  .option("-i, --iterations <n>", "Number of iterations", "50")
+  .action((files, opts) => {
+    const iterations = parseInt(opts.iterations, 10) || 50;
+    const testFiles = files && files.length > 0 ? expandFiles(files) : [];
+
+    let sampleCode = "";
+    if (testFiles.length > 0) {
+      sampleCode = fs.readFileSync(testFiles[0], "utf8");
+      console.log(`\n⚡ Benchmarking file: ${colors.cyan}${testFiles[0]}${colors.reset}`);
+    } else {
+      sampleCode = `
+ধ্রুবক নাম = "মাহমুদ";
+সংখ্যা বয়স = ২৫;
+অনুষ্ঠান গণনা(ক, খ) {
+  ফেরত ক + খ;
+}
+জন্য (সংখ্যা i = ০; i < ১০০; i++) {
+  যদি (i % ২ === ০) {
+    লিখো("জোড়: " + i);
+  }
+}
+`;
+      console.log(`\n⚡ Benchmarking sample BanglaScript snippet`);
+    }
+
+    const lines = sampleCode.split("\n").length;
+    console.log(`   Lines: ${lines} | Iterations: ${iterations}\n`);
+
+    // 1. Cold run (without cache)
+    cacheInstance.clear();
+    cacheInstance.setEnabled(false);
+
+    const startCold = process.hrtime.bigint();
+    for (let i = 0; i < iterations; i++) {
+      transpile(sampleCode, false, { cache: false });
+    }
+    const endCold = process.hrtime.bigint();
+    const coldDurationMs = Number(endCold - startCold) / 1_000_000;
+    const coldThroughput = Math.round((lines * iterations) / (coldDurationMs / 1000));
+
+    console.log(`Cold Transpilation (No Cache):`);
+    console.log(`  Total time: ${coldDurationMs.toFixed(2)} ms`);
+    console.log(`  Avg per run: ${(coldDurationMs / iterations).toFixed(2)} ms`);
+    console.log(`  Throughput: ${colors.green}${coldThroughput.toLocaleString()} lines/sec${colors.reset}\n`);
+
+    // 2. Cached run
+    cacheInstance.setEnabled(true);
+    transpile(sampleCode, false, { cache: true }); // warmup
+
+    const startWarm = process.hrtime.bigint();
+    for (let i = 0; i < iterations; i++) {
+      transpile(sampleCode, false, { cache: true });
+    }
+    const endWarm = process.hrtime.bigint();
+    const warmDurationMs = Number(endWarm - startWarm) / 1_000_000;
+    const warmThroughput = Math.round((lines * iterations) / (warmDurationMs / 1000));
+
+    console.log(`Cached Transpilation (Memory LRU Cache):`);
+    console.log(`  Total time: ${warmDurationMs.toFixed(2)} ms`);
+    console.log(`  Avg per run: ${(warmDurationMs / iterations).toFixed(3)} ms`);
+    console.log(`  Throughput: ${colors.green}${warmThroughput.toLocaleString()} lines/sec${colors.reset}`);
+    console.log(`  Speedup: ${colors.yellow}${(coldDurationMs / warmDurationMs).toFixed(1)}x faster${colors.reset}\n`);
+  });
+
 // ==================== WATCH COMMAND ====================
 
 program
@@ -259,7 +390,7 @@ program
     watchAndBuild(expanded, opts.out, opts.minify, opts.noTranslit);
   });
 
-// ==================== INIT COMMAND (ENHANCED) ====================
+// ==================== INIT COMMAND ====================
 
 program
   .command("init [name]")
@@ -271,7 +402,6 @@ program
   .option("--cli", "Shortcut for --template cli")
   .option("-l, --list", "List available templates")
   .action((name, opts) => {
-    // List templates
     if (opts.list) {
       console.log(`\n${colors.cyan}📦 Available Templates:${colors.reset}\n`);
       getTemplateList().forEach((t, i) => {
@@ -283,7 +413,6 @@ program
       return;
     }
 
-    // Determine template
     let templateName = opts.template;
     if (opts.web) templateName = "web";
     if (opts.api) templateName = "api";
@@ -309,7 +438,6 @@ program
     console.log(`\n📦 Creating ${template.displayName}: ${projectName}`);
     console.log(`   Template: ${templateName}\n`);
 
-    // Create directories
     ensureDir(projectDir);
     ensureDir(path.join(projectDir, "src"));
     ensureDir(path.join(projectDir, "build"));
@@ -321,7 +449,6 @@ program
       }
     }
 
-    // Write files
     for (const [filePath, content] of Object.entries(template.files)) {
       const fullPath = path.join(projectDir, filePath);
       const dirPath = path.dirname(fullPath);
@@ -332,7 +459,6 @@ program
       console.log(`  ${colors.green}✓${colors.reset} ${filePath}`);
     }
 
-    // Print banner
     printBanner();
     printSuccess("Project created successfully!");
 
@@ -342,8 +468,6 @@ program
 
     if (template.name === "web") {
       console.log(`  ${colors.yellow}# Open index.html in browser${colors.reset}`);
-    } else if (template.name === "api" || template.name === "fullstack") {
-      console.log(`  ${colors.yellow}npm start${colors.reset}`);
     } else {
       console.log(`  ${colors.yellow}npm start${colors.reset}`);
     }
@@ -351,32 +475,42 @@ program
     console.log(`\n${colors.dim}Or run directly: bjs run src/main.bjs${colors.reset}\n`);
   });
 
-// ==================== REPL COMMAND ====================
+// ==================== REPL COMMAND (WITH AUTOCOMPLETION) ====================
 
 program
   .command("repl")
-  .description("Start interactive BanglaScript REPL")
+  .description("Start interactive BanglaScript REPL with autocompletion")
   .option("--no-translit", "Do not transliterate Bangla identifiers")
   .action((opts) => {
     printBanner();
     console.log(`${colors.cyan}Interactive Mode - Type BanglaScript code and press Enter${colors.reset}`);
-    console.log(`${colors.dim}Commands: .help, .clear, .exit${colors.reset}\n`);
+    console.log(`${colors.dim}Tab autocompletion enabled | Commands: .help, .clear, .exit${colors.reset}\n`);
+
+    const keywordList = Object.keys(KEYWORDS);
+
+    function completer(line) {
+      const lastWord = line.split(/[\s,();+*/={}[\]]+/).pop() || "";
+      if (!lastWord) return [[], line];
+      const hits = keywordList.filter((k) => k.startsWith(lastWord));
+      return [hits.length ? hits : [], lastWord];
+    }
+
+    const historyFile = path.join(os.homedir(), ".bjs_history");
 
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
+      completer,
       prompt: `${colors.green}bjs>${colors.reset} `,
     });
 
     let multilineBuffer = "";
-    let inMultiline = false;
 
     rl.prompt();
 
     rl.on("line", (line) => {
       const trimmed = line.trim();
 
-      // Handle REPL commands
       if (trimmed === ".exit" || trimmed === ".quit") {
         console.log("\n👋 বিদায়!");
         process.exit(0);
@@ -391,8 +525,8 @@ ${colors.cyan}REPL Commands:${colors.reset}
   .keywords Show all keywords
 
 ${colors.cyan}Tips:${colors.reset}
-  - Type BanglaScript code and press Enter
-  - For multiline: end line with \\ to continue
+  - Press ${colors.yellow}Tab${colors.reset} to autocomplete Bengali keywords!
+  - For multiline: end line with \\ or unclosed { (
   - Use ${colors.yellow}লিখো()${colors.reset} to print output
 `);
         rl.prompt();
@@ -415,14 +549,12 @@ ${colors.cyan}Tips:${colors.reset}
       // Handle multiline input
       if (trimmed.endsWith("\\")) {
         multilineBuffer += line.slice(0, -1) + "\n";
-        inMultiline = true;
         process.stdout.write(`${colors.dim}...${colors.reset} `);
         return;
       }
 
       const code = multilineBuffer + line;
       multilineBuffer = "";
-      inMultiline = false;
 
       if (!code.trim()) {
         rl.prompt();
@@ -431,21 +563,31 @@ ${colors.cyan}Tips:${colors.reset}
 
       try {
         const jsCode = transpile(code, opts.noTranslit);
+        const wrappedCode = `(async () => { return (${jsCode}); })()`;
 
-        // Wrap in async IIFE for await support
-        const wrappedCode = `(async () => { ${jsCode} })().catch(e => console.error(e))`;
-
-        const result = eval(wrappedCode);
-
-        // Don't print undefined results from void functions
-        if (result !== undefined && !(result instanceof Promise)) {
-          console.log(`${colors.dim}=>${colors.reset}`, result);
-        }
+        eval(wrappedCode)
+          .then((res) => {
+            if (res !== undefined) {
+              console.log(`${colors.dim}=>${colors.reset}`, res);
+            }
+            rl.prompt();
+          })
+          .catch(() => {
+            // Fallback for statements
+            try {
+              const stmtWrapped = `(async () => { ${jsCode} })()`;
+              eval(stmtWrapped).catch((err) => {
+                console.error(`${colors.red}Error: ${err.message}${colors.reset}`);
+              }).finally(() => rl.prompt());
+            } catch (err) {
+              console.error(`${colors.red}Error: ${err.message}${colors.reset}`);
+              rl.prompt();
+            }
+          });
       } catch (error) {
         console.error(`${colors.red}Error: ${error.message}${colors.reset}`);
+        rl.prompt();
       }
-
-      rl.prompt();
     });
 
     rl.on("close", () => {
@@ -462,17 +604,33 @@ program
   .option("-s, --search <term>", "Search for a keyword")
   .option("-c, --category <cat>", "Filter by category")
   .action((opts) => {
-    showKeywords();
+    showKeywords(opts.search, opts.category);
   });
 
 // ==================== TRANSPILE COMMAND ====================
 
 program
-  .command("transpile")
-  .description("Transpile BanglaScript code from stdin to JavaScript")
+  .command("transpile [file]")
+  .description("Transpile BanglaScript code to JavaScript")
   .option("-m, --minify", "Minify output JS")
   .option("--no-translit", "Do not transliterate Bangla identifiers")
-  .action((opts) => {
+  .action((file, opts) => {
+    if (file) {
+      try {
+        const content = fs.readFileSync(file, "utf8");
+        let { code } = transpileWithSourceMap(content, path.basename(file), opts.noTranslit);
+        if (opts.minify) {
+          code = transformSync(code, { presets: ["minify"], comments: false }).code;
+        }
+        process.stdout.write(code + "\n");
+      } catch (error) {
+        printError(`Transpile failed: ${error.message}`);
+        process.exit(1);
+      }
+      return;
+    }
+
+    // Stdin mode
     let input = "";
     process.stdin.resume();
     process.stdin.setEncoding("utf8");
@@ -481,20 +639,15 @@ program
     });
     process.stdin.on("end", () => {
       try {
-        const { code } = transpileWithSourceMap(
+        let { code } = transpileWithSourceMap(
           input.trim(),
           "stdin.bjs",
           opts.noTranslit,
         );
-        let output = code;
         if (opts.minify) {
-          const minified = transformSync(output, {
-            presets: ["minify"],
-            comments: false,
-          });
-          output = minified.code;
+          code = transformSync(code, { presets: ["minify"], comments: false }).code;
         }
-        process.stdout.write(output + "\n");
+        process.stdout.write(code + "\n");
       } catch (error) {
         printError(`Transpile failed: ${error.message}`);
         process.exit(1);
@@ -543,7 +696,7 @@ program
       console.log(`
 ${colors.cyan}About BanglaScript${colors.reset}
   Version: ${pkg.version}
-  Description: Write JavaScript in Bangla - জাভাস্ক্রিপ্ট বাংলায় লিখুন
+  Description: ${pkg.description}
   License: ${pkg.license || "MIT"}
 
 ${colors.cyan}Links${colors.reset}
@@ -607,17 +760,6 @@ program
   .option("-c, --clear", "Clear all cache")
   .option("--clear-old", "Clear old cache entries (>7 days)")
   .action((opts) => {
-    if (opts.stats) {
-      const stats = cacheInstance.getStats();
-      console.log(`\n${colors.cyan}📊 Cache Statistics${colors.reset}`);
-      console.log("─".repeat(50));
-      console.log(`Memory cache: ${stats.memoryCacheCount}/${stats.memoryCacheLimit} items`);
-      console.log(`Disk cache: ${stats.diskCacheCount} items (${stats.diskCacheSizeMB} MB)`);
-      console.log(`Status: ${stats.enabled ? colors.green + "Enabled" : colors.red + "Disabled"}${colors.reset}`);
-      console.log();
-      return;
-    }
-
     if (opts.clear) {
       cacheInstance.clear();
       printSuccess("Cache cleared");
@@ -630,25 +772,13 @@ program
       return;
     }
 
-    // Default: show stats
     const stats = cacheInstance.getStats();
     console.log(`\n${colors.cyan}📊 Cache Statistics${colors.reset}`);
     console.log("─".repeat(50));
-    console.log(`Memory: ${stats.memoryCacheCount} items`);
-    console.log(`Disk: ${stats.diskCacheCount} items (${stats.diskCacheSizeMB} MB)`);
-    console.log(`\nUse --clear to clear cache, --stats for detailed stats`);
+    console.log(`Memory cache: ${stats.memoryCacheCount}/${stats.memoryCacheLimit} items`);
+    console.log(`Disk cache: ${stats.diskCacheCount} items (${stats.diskCacheSizeMB} MB)`);
+    console.log(`Status: ${stats.enabled ? colors.green + "Enabled" : colors.red + "Disabled"}${colors.reset}`);
     console.log();
-  });
-
-// ==================== FORMAT COMMAND ====================
-
-program
-  .command("format <file>")
-  .description("Format BanglaScript code (experimental)")
-  .option("-w, --write", "Write formatted code back to file")
-  .action((file, opts) => {
-    printWarning("Format command is experimental.");
-    console.log("Coming in future versions!");
   });
 
 // ==================== UPGRADE COMMAND ====================
@@ -696,7 +826,6 @@ program.exitOverride((err) => {
 
 program.parse(process.argv);
 
-// Show help if no arguments
 if (process.argv.length === 2) {
   printBanner();
   program.help();

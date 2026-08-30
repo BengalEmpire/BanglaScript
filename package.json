@@ -1,9 +1,15 @@
 {
   "name": "banglascript",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "BanglaScript: Write JavaScript in Bangla. Full-featured transpiler with CLI, REPL, project templates, caching, and modern JavaScript support. 🇧🇩",
   "main": "lib/transpile-ast.js",
   "types": "lib/index.d.ts",
+  "exports": {
+    ".": "./lib/transpile-ast.js",
+    "./register": "./lib/register.js",
+    "./cache": "./lib/cache.js",
+    "./utils": "./lib/utils.js"
+  },
   "files": [
     "bin/",
     "lib/",
@@ -15,7 +21,7 @@
     "banglascript": "bin/bjs.js"
   },
   "scripts": {
-    "test": "jest",
+    "test": "node --test test/transpile.test.js",
     "test:watch": "jest --watch",
     "build": "bjs build examples/*.bjs -o build",
     "watch": "bjs watch examples/*.bjs -o build",
@@ -44,7 +50,10 @@
     "babel",
     "ast",
     "es6",
+    "es2024",
     "nodejs",
+    "source-map",
+    "lru-cache",
     "web-development"
   ],
   "author": {
